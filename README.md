@@ -1,1 +1,1 @@
-# Dynamic-discrete-time-mover-stayer-model
+# Dynamic-mover-stayer-model

@@ -19,8 +19,23 @@ initial_par= rep(0,2*d2+3*d1) # initial parameter for the optimization procedure
 # perform maximum likelihood estimation
 DMS_fit=DMS(baseline_cov=X[,-1],TVC=TVC,approx_order=approx_order,obs_State,obs_time,optim_method ="BFGS",maxit=100,initial_par)
 est=c(DMS_fit$alpha_0,DMS_fit$beta_12,DMS_fit$beta_13,DMS_fit$gamma_12,DMS_fit$gamma_13)
-
 # repeat the previous procedure with different random starting points to ensure identification of the global maximum
+
+
+
+# estimate cumulative probability of being a stayer or moving within time t
+
+baseline_est_stayer_prob=(1-c(p(est[1:d1],X))) #estimated stayer probability at baseline
+prob_moving_est=matrix(NA,nrow=n,ncol=K) # matrix of estimated cumulative probabilities of moving, for each time and each subject
+prob_stayer_est=matrix(NA,nrow=n,ncol=K) # matrix of estimated cumulative probabilities of being a stayer, for each time and each subject
+prob_stayer_est[,1]=(1-c(p(est[1:d1],X)))+c(p(est[1:d1],X))*c(ml12(c(est[(d1+1):(2*d1)],est[(3*d1+1):(3*d1+d2)]),c(est[(2*d1+1):(3*d1)],est[(3*d1+d2+1):(3*d1+2*d2)]),cbind(X,TVC[,1,1],TVC[,1,2])))
+prob_moving_est[,1]=c(p(est[1:d1],X))*c(ml14(c(est[(d1+1):(2*d1)],est[(3*d1+1):(3*d1+d2)]),c(est[(2*d1+1):(3*d1)],est[(3*d1+d2+1):(3*d1+2*d2)]),cbind(X,TVC[,1,1],TVC[,1,2])))
+for(i in 1:n){
+  for(j in 2:K){
+    prob_moving_est[i,j]=prob_moving_est[i,(j-1)]+(1-prob_moving_est[i,(j-1)]-prob_stayer_est[i,j-1])*c(ml14(c(est[(d1+1):(2*d1)],est[(3*d1+1):(3*d1+d2)]),c(est[(2*d1+1):(3*d1)],est[(3*d1+d2+1):(3*d1+2*d2)]),t(c(X[i,],TVC[i,j,1],TVC[i,j,2]))))
+    prob_stayer_est[i,j]=prob_stayer_est[i,(j-1)]+(1-prob_moving_est[i,(j-1)]-prob_stayer_est[i,j-1])*c(ml12(c(est[(d1+1):(2*d1)],est[(3*d1+1):(3*d1+d2)]),c(est[(2*d1+1):(3*d1)],est[(3*d1+d2+1):(3*d1+2*d2)]),t(c(X[i,],TVC[i,j,1],TVC[i,j,2]))))
+  }
+}
 
 # bootstrap confidence intervals
 

@@ -8,5 +8,5 @@ Here we demonstrate the method for generated data (under the setting 1 of the pa
 
 References
 
-E. Musta and M. Vittorietti (2025) A mover and stayer model with time-dependent stayer fraction. arxiv:...
+E. Musta and M. Vittorietti (2025) A mover and stayer model with time-dependent stayer fraction. arXiv:2505.10065
 
